@@ -2,11 +2,9 @@ from django_plotly_dash import DjangoDash
 import dash_bootstrap_components as dbc
 from dash import dcc, html, Input, Output
 import plotly.express as px
-import locale
 from scipy.optimize import curve_fit
 from sklearn.metrics import mean_squared_error
 import plotly.graph_objects as go
-locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
 import pandas as pd
 import numpy as np
 import sqlalchemy as sa

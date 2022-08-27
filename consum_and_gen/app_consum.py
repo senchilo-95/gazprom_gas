@@ -4,7 +4,6 @@ import datetime
 import dash_bootstrap_components as dbc
 from dash import dcc, html, Input, Output
 import plotly.express as px
-import locale
 import numpy as np
 from prophet import Prophet
 import pandas as pd
