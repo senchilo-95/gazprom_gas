@@ -12,7 +12,6 @@ import plotly.graph_objects as go
 from sklearn.metrics import mean_squared_error
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
-locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
 
 def mape(true,preds):
     return np.round(np.mean(np.abs(true-preds)/true)*100,2)
