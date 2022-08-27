@@ -8,25 +8,11 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Тестовое задание Газпром Экспорт</title>
+    <title>Анализ потребления газа на мировых рынках</title>
     <link rel="stylesheet" href="{% static 'dash_RSV/css/main.css' %}">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
     <script src="{% static 'dash_RSV/js/main.js' %}"></script>
-    <!-- Yandex.Metrika counter -->
 
-<script type="text/javascript" >
-   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-   m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-
-   ym(89825037, "init", {
-        clickmap:true,
-        trackLinks:true,
-        accurateTrackBounce:true
-   });
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/89825037" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
 
 </head>
 <body>
@@ -43,11 +29,11 @@
 </div>
 
 <div id="futures" class="tabcontent">
-    {%plotly_app name="SimpleExample" ratio=2.2%}
+    {%plotly_app name="SimpleExample" ratio=0.7%}
 </div>
 
 <div id="gas_supply" class="tabcontent">
-	{%plotly_app  name="GasApp" ratio=0.5%}
+	{%plotly_app  name="GasApp" ratio=1.1%}
 </div>
     </ul>
 

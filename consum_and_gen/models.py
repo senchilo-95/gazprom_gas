@@ -1,18 +1,15 @@
 from django.db import models
 
-class generation_and_consumption(models.Model):
+class gas_supply(models.Model):
     date = models.DateTimeField('date')
-    generation=models.FloatField('generation')
-    consumption=models.FloatField('consumption')
-    ups = models.TextField('ups')
+    country=models.TextField('country')
+    gas_supply=models.FloatField('gas_supply')
 
     def __str__(self):
-        return self.ups
+        return self.date
 
     class Meta:
-        verbose_name = 'Потребление и генерация с сайта СО ЕЭС'
-        verbose_name_plural = 'Потребление и генерация с сайта СО ЕЭС'
-
-
+        verbose_name = 'Объемы потребления газа'
+        verbose_name_plural = 'Объемы потребления газа'
 
 

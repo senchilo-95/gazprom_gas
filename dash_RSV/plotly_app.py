@@ -1,7 +1,6 @@
 from django_plotly_dash import DjangoDash
-import datetime
 import dash_bootstrap_components as dbc
-from dash import Dash, dcc, html, Input, Output
+from dash import dcc, html, Input, Output
 import plotly.express as px
 import locale
 from scipy.optimize import curve_fit
@@ -10,27 +9,54 @@ import plotly.graph_objects as go
 locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
 import pandas as pd
 import numpy as np
-
+import sqlalchemy as sa
 dict_dates = {1:'янв',2:'фев',3:'мар',4:'апр',5:'май',6:'июн',7:'июл',8:'авг',9:'сен',10:'окт',11:'ноя',12:'дек'}
 dict_dates_full = {1:'января',2:'февраля',3:'марта',4:'апреля',5:'мая',6:'июня',7:'июля',8:'августа',9:'сентября',10:'октября',11:'ноября',12:'декабря'}
 
-df = pd.read_csv('dutch_futures.csv',sep=';')
-df=df[['MONTH','CHANGE','SETTLE']]
-df['DT']=pd.date_range(start=datetime.datetime(2022,9,1),end=datetime.datetime(2032,1,1),freq='1M')
-df_train = df[:36]
+# df = pd.read_csv('dutch_futures.csv',sep=';')
+# df=df[['MONTH','CHANGE','SETTLE']]
+# df['DT']=pd.date_range(start=datetime.datetime(2022,9,1),end=datetime.datetime(2032,1,1),freq='1M')
 
+engine = sa.create_engine('sqlite:///consum.sqlite3')
+connection=engine.connect()
+
+# result = engine.execute("""
+#         CREATE TABLE "gas_futures" (
+#            date DATETIME,
+#            month_name TEXT,
+#             change_price FLOAT,
+#             settle_price FLOAT,
+#            PRIMARY KEY (date)
+#         )
+#           """)
+# df.to_sql('gas_futures', con=connection, index=False, if_exists='replace')
+# inspector = sa.inspect(engine)
+# schemas = inspector.get_schema_names()
+# for schema in schemas:
+#     print("schema: %s" % schema)
+#     for table_name in inspector.get_table_names(schema=schema):
+#         for column in inspector.get_columns(table_name, schema=schema):
+#             print("Column: %s" % column)
+
+command=("""
+SELECT *
+FROM [gas_futures]
+""")
+
+df = pd.read_sql_query(command,connection)
+df['DT']=pd.to_datetime(df['DT'])
+
+
+df_train = df[:36]
 y_train = df_train['SETTLE'].values
 x_train = df_train.index
-
-
-
 def func(x,a,b,c):
     return a * np.exp(-b * x**2) + c
 
 
 popt, pcov = curve_fit(func, x_train, y_train,
                        method='lm',
-                       maxfev=6000)
+                       maxfev=300)
 
 mse = np.sqrt(mean_squared_error(y_train,func(x_train, *popt)))
 
@@ -43,7 +69,7 @@ cards = html.Div(
     ]
 )
 
-slider=dcc.Slider(37, len(df),1, value=60,
+slider=dcc.Slider(37, len(df),1, value=51,
     marks={idx: {'label':'{} {}'.format(dict_dates[df['DT'][idx].month], df['DT'][idx].year),
                  'style':{'writing-mode': 'vertical-rl','text-orientation': 'use-glyph-orientation','height':'100px'}
                  } for idx in range(37,len(df),1)},

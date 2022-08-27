@@ -1,30 +1,19 @@
 from django.db import models
 
-# Create your models here.
-class prices_RSV_from_ATS(models.Model):
-    date = models.DateTimeField('Дата')
-    station=models.TextField('Станция')
-    price=models.FloatField('Цена')
+class gas_futures(models.Model):
+    date = models.DateTimeField('DT')
+    month_name=models.TextField('MONTH')
+    change_price=models.FloatField('CHANGE')
+    settle_price=models.FloatField('SETTLE')
 
     def __str__(self):
-        return self.station
+        return self.date
 
     class Meta:
-        verbose_name = 'Цена РСВ с сайта АТС'
-        verbose_name_plural = 'Цена РСВ с сайта АТС'
+        verbose_name = 'Цена фьючерсов на газ'
+        verbose_name_plural = 'Цена фьючерсов на газ'
 
-class prices_all(models.Model):
-    station=models.TextField('Станция')
-    price=models.FloatField('Цена')
-    gen_company=models.TextField('Станция')
-    date = models.DateTimeField('Дата')
 
-    def __str__(self):
-        return self.station
-
-    class Meta:
-        verbose_name = 'Цены РСВ для всех компаний'
-        verbose_name_plural = 'Цены РСВ для всех компаний'
 
 
 
