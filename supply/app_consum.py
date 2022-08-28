@@ -15,19 +15,7 @@ from statsmodels.tsa.statespace.sarimax import SARIMAX
 test_len = 3  # длина тестовой выборки
 len_forecast = 12  # горизонт прогноза
 
-def hw_forecast(data_train,data_test):
-    # модель экспоненциального сглаживания Хольта-Винтерса
-    model = ExponentialSmoothing(data_train,trend='mul',seasonal='mul',damped_trend=True, seasonal_periods=12).fit()
-    test_predictions = model.forecast(len_forecast)
-    mse_hw=np.sqrt(mean_squared_error(data_test.values,test_predictions[:len(data_test)]))
-    return test_predictions,mse_hw
-def arima_forecast(data_train,data_test):
-    model = SARIMAX(data_train, order=(1, 0, 2), seasonal_order=(1, 0, 2, 12))
-    model_fit = model.fit(disp=False)
-    # make prediction
-    yhat = model_fit.predict(len(data_train),len(data_train)+len_forecast-1)
-    mse=(np.sqrt(mean_squared_error(data_test.values,yhat[:len(data_test)])))
-    return yhat,mse
+
 
 def mape(true,preds):
     return np.round(np.mean(np.abs(true-preds)/true)*100,2)
@@ -64,7 +52,10 @@ connection=engine.connect()
 #         )
 #           """)
 #
+
 # df_melt.to_sql('gas_supply', con=connection, index=False, if_exists='replace')
+
+
 command=("""
 SELECT *
 FROM [gas_supply]
@@ -73,6 +64,27 @@ FROM [gas_supply]
 df_db = pd.read_sql_query(command,connection)
 df_db['date']=pd.to_datetime(df_db['date'])
 df_t=pd.pivot_table(df_db,index='date',columns='country',values='gas_supply')
+
+# df = pd.read_excel('/Users/nikitasencilo/PycharmProjects/gazp_exp_tst/ogk-web-prices/supply/forecasts.xlsx')
+# df=(df[df.columns[1:]])
+# result = engine.execute("""
+#         CREATE TABLE "supply_forecast" (
+#            date DATETIME,
+#            country TEXT,
+#             forecast FLOAT,
+#            PRIMARY KEY (date,country)
+#         )
+#           """)
+#
+# df.to_sql('supply_forecast', con=connection, index=False, if_exists='replace')
+
+command=("""
+SELECT *
+FROM [supply_forecast]
+""")
+
+df_forecast = pd.read_sql_query(command,connection)
+forecast_pivot = pd.pivot_table(df_forecast,index='date',columns='country',values='forecast')
 
 
 ues_tabs = dcc.Tabs(
@@ -123,25 +135,15 @@ app.layout =  html.Div([ues_tabs,cards],style={'background-color': '#D0DBEA','mi
 def update_graph(tab):
 
     data = pd.DataFrame(df_t[df_t.index.year >= 2019][tab])
-    data_train = data[data.index.year <= 2021][tab]
     data_test = data[-6:-6 + test_len][tab]
-    preds_arima,mse_arima = arima_forecast(data_train,data_test)
-    preds_hw,mse_hw = hw_forecast(data_train,data_test)
 
     date_range = [datetime.datetime(dt.year, dt.month, 1) for dt in
                   pd.date_range(start='2022-01', freq='1M', periods=len_forecast)]
     future_for_plot = pd.DatetimeIndex(date_range)
-    mape_hw = mape(data_test.values, preds_hw[:test_len].values)
-    mape_arima = mape(data_test.values, preds_arima[:test_len].values)
+    forecast_country = forecast_pivot[tab]
+    mape_fact = np.round(mape(data_test.values, forecast_country[:test_len].values),2)
+    mse=np.round(np.sqrt(mean_squared_error(data_test.values, forecast_country[:test_len].values)))
 
-    if tab in ['BE']:
-        mse =np.round(mse_arima)
-        preds=preds_arima
-        mape_fact=mape_arima
-    else:
-        mse=np.round(mse_hw)
-        preds=preds_hw
-        mape_fact=mape_hw
 
     df = pd.DataFrame(data[data.index.year == 2019])
     df.columns = [2019]
@@ -172,7 +174,7 @@ def update_graph(tab):
                                         '2022': '#D50E2F'},
                      markers=True)
 
-    figure.add_trace(go.Scatter(x=df['DT'], y=preds,
+    figure.add_trace(go.Scatter(x=df['DT'], y=forecast_country.values,
                                 mode='lines+markers',
                                 name='Прогноз 2022'))
     figure.update_xaxes(
@@ -198,7 +200,7 @@ def update_graph(tab):
                      color_discrete_map={'Объем потребления газа': '#6DCFF6',
                                          'Cкользящее среднее (3 мес)': '#FF9C00'},
                      markers=True)
-    figure2.add_trace(go.Scatter(x=future_for_plot, y=preds.values,
+    figure2.add_trace(go.Scatter(x=future_for_plot, y=forecast_country.values,
                                 mode='lines+markers',
                                 name='Прогноз 2022'))
     figure2.update_xaxes(
