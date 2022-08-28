@@ -1,0 +1,7 @@
+{% extends 'futures/layout.html' %}
+{% block title %}Цены РСВ для станций ОГК-2{% endblock %}
+{% block content %}
+    {%load plotly_dash%}
+	{%plotly_app  name="SimpleExample" ratio=2.2%}
+{% endblock %}
+

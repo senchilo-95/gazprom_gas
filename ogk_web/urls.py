@@ -18,8 +18,8 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('dash_RSV.urls')),
-    path('dash_RSV/', include('dash_RSV.urls')),
-    path('consum_and_gen/', include('consum_and_gen.urls')),
+    path('', include('futures.urls')),
+    path('futures/', include('futures.urls')),
+    path('supply/', include('supply.urls')),
     path('django_plotly_dash/', include('django_plotly_dash.urls'))
 ]

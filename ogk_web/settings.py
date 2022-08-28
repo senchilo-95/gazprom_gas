@@ -36,8 +36,8 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'dpd_static_support',
-    'dash_RSV',
-    'consum_and_gen',
+    'futures',
+    'supply',
     'import_export',
     'django.contrib.admin',
     'django.contrib.auth',

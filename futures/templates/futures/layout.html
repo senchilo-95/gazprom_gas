@@ -1,0 +1,114 @@
+{% load static %}
+{% load bootstrap4 %}
+{%load plotly_dash%}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Анализ потребления газа на мировых рынках</title>
+    <link rel="stylesheet" href="{% static 'dash_RSV/css/main.css' %}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <script src="{% static 'dash_RSV/js/main.js' %}"></script>
+<style>
+.collapsible {
+  background-color: #9DBEDF;
+  color: #16222E;
+  cursor: pointer;
+  padding: 18px;
+  width: 95.5%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.active, .collapsible:hover {
+  background-color: #05417C;
+}
+
+.content {
+  padding: 0 18px;
+  display: none;
+  overflow: hidden;
+  background-color: #f1f1f1;
+}
+</style>
+
+</head>
+<body>
+<main>
+<!-- Tab content -->
+<aside>
+    <ul>
+
+        <!-- Tab links -->
+<div class="tab">
+  <button class="tablinks" onclick="openCity(event, 'futures')"><li><i class="fas fa-chart-line"></i> Фьючерсная кривая рынка</li></button>
+  <button class="tablinks" onclick="openCity(event, 'gas_supply')"><li><i class="fas fa-gas-pump"></i> Объем потребления газа в Европе</li></button>
+
+</div>
+
+<div id="futures" class="tabcontent">
+<button type="button" class="collapsible">Открыть исторические данные фьючерсов Dutch Natural Gas NYMEX-TTF1</button>
+<div class="content">
+    <!-- TradingView Widget BEGIN -->
+<div class="tradingview-widget-container">
+  <div id="tradingview_10411"></div>
+  <div class="tradingview-widget-copyright"><a href="https://ru.tradingview.com/symbols/NYMEX-TTF1!/" rel="noopener" target="_blank"><span class="blue-text">График TTF1!</span></a> от TradingView</div>
+  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+  <script type="text/javascript">
+  new TradingView.widget(
+  {
+  "width": 980,
+  "height": 610,
+  "symbol": "NYMEX:TTF1!",
+  "interval": "W",
+  "timezone": "Etc/UTC",
+  "theme": "light",
+  "style": "1",
+  "locale": "ru",
+  "toolbar_bg": "#f1f3f6",
+  "enable_publishing": false,
+  "hide_top_toolbar": true,
+  "hide_legend": true,
+  "container_id": "tradingview_10411"
+}
+  );
+  </script>
+</div>
+<!-- TradingView Widget END -->
+</div>
+
+    {%plotly_app name="SimpleExample" ratio=0.7%}
+</div>
+
+<div id="gas_supply" class="tabcontent">
+	{%plotly_app  name="GasApp" ratio=1.1%}
+</div>
+    </ul>
+
+</aside>
+
+    <script>
+var coll = document.getElementsByClassName("collapsible");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
+}
+</script>
+</main>
+
+</body>
+</html>
