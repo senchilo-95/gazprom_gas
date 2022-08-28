@@ -5,12 +5,9 @@ import dash_bootstrap_components as dbc
 from dash import dcc, html, Input, Output
 import plotly.express as px
 import numpy as np
-from prophet import Prophet
 import pandas as pd
 import plotly.graph_objects as go
 from sklearn.metrics import mean_squared_error
-from statsmodels.tsa.holtwinters import ExponentialSmoothing
-from statsmodels.tsa.statespace.sarimax import SARIMAX
 
 test_len = 3  # длина тестовой выборки
 len_forecast = 12  # горизонт прогноза
