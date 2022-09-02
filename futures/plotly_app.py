@@ -50,13 +50,24 @@ y_train = df_train['SETTLE'].values
 x_train = df_train.index
 def func(x,a,b,c):
     return a * np.exp(-b * x**2) + c
-
-
+# подбор оптимальных параметров
 popt, pcov = curve_fit(func, x_train, y_train,
                        method='lm',
-                       maxfev=300)
+                       maxfev=6000)
 
-mse = np.sqrt(mean_squared_error(y_train,func(x_train, *popt)))
+a_0 = popt[0]
+b_0=popt[1]
+c_0=popt[2]
+
+#  экспонента
+def func(x):
+    return (a_0 * np.exp(-b_0 * x**2) + c_0)+20*np.sin(0.5*x)*np.exp(-0.02*x)
+# подбор оптимальных параметров
+# popt, pcov = curve_fit(func, df.index, df['SETTLE'].values,
+#                        method='lm',
+#                        maxfev=6000)
+# расчет ошибки
+mse = np.sqrt(mean_squared_error(y_train,func(x_train)))
 
 futures = dbc.Card([dcc.Graph(id='my-graph')])
 cards = html.Div(
@@ -86,7 +97,7 @@ def update_graph(dot):
     df_test = df[36:dot]
     y_test = df_test['SETTLE'].values
     x_test = df_test.index
-    mse_forecast = np.sqrt(mean_squared_error(y_test, func(x_test, *popt)))
+    mse_forecast = np.sqrt(mean_squared_error(y_test, func(x_test)))
 
     figure = px.scatter(df_train.reset_index(),
                      x='DT',
@@ -100,14 +111,14 @@ def update_graph(dot):
                      title="Кривая фьючерсов. Среднеквадратичная ошибка для восстановленной кривой = {:.1f}$, для прогноза = {:.1f}$".format(mse,mse_forecast)
                         )
 
-    figure.add_trace(go.Scatter(x=df_train['DT'], y=func(x_train, *popt),
+    figure.add_trace(go.Scatter(x=df_train['DT'], y=func(x_train),
                              mode='lines',
                              name='Восстановленная кривая (36 месяцев)'))
 
     figure.add_trace(go.Scatter(x=df_test['DT'], y=df_test['SETTLE'],
                                 mode='markers',
                                 name='Цены фьючерсов (будущее)'))
-    figure.add_trace(go.Scatter(x=df_test['DT'], y=func(x_test, *popt),
+    figure.add_trace(go.Scatter(x=df_test['DT'], y=func(x_test),
                                 mode='lines',
                                 name='Восстановленная кривая (прогноз)'))
 
